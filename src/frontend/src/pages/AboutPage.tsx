@@ -55,7 +55,7 @@ export default function AboutPage() {
             {/* Left — Photo */}
             <div className="relative overflow-hidden bg-[#F5F1EB] order-2 lg:order-1">
               <img
-                src="/assets/generated/about-shagun-portrait.dim_800x1000.jpg"
+                src="https://res.cloudinary.com/doj0aeuvi/image/upload/v1772909443/1000041676_pg44ww.jpg"
                 alt="Shagun Goyal — Fashion Stylist"
                 className="w-full h-full object-cover object-top"
                 style={{ minHeight: "500px", maxHeight: "700px" }}
