@@ -287,5 +287,102 @@ export async function deleteContactMessage(id: string): Promise<void> {
   await remove(msgRef);
 }
 
+// ─── Private Gallery ─────────────────────────────────────────────────────────
+
+export interface PrivateMediaItem {
+  id: string;
+  type: "image" | "video";
+  url: string;
+  title: string;
+  createdAt: number;
+}
+
+export async function getPrivatePassword(): Promise<string> {
+  const pwRef = ref(db, "privateGallery/password");
+  const snapshot = await get(pwRef);
+  if (!snapshot.exists()) return "test-2e4";
+  return snapshot.val() as string;
+}
+
+export async function getPrivateMedia(): Promise<PrivateMediaItem[]> {
+  const mediaRef = ref(db, "privateGallery/media");
+  const snapshot = await get(mediaRef);
+  if (!snapshot.exists()) return [];
+  const data = snapshot.val() as Record<string, PrivateMediaItem>;
+  return Object.values(data).sort((a, b) => b.createdAt - a.createdAt);
+}
+
+export async function seedPrivateMediaIfEmpty(): Promise<void> {
+  const [mediaItems, pwSnapshot] = await Promise.all([
+    getPrivateMedia(),
+    get(ref(db, "privateGallery/password")),
+  ]);
+
+  if (!pwSnapshot.exists()) {
+    await set(ref(db, "privateGallery/password"), "test-2e4");
+  }
+
+  if (mediaItems.length === 0) {
+    const placeholders: PrivateMediaItem[] = [
+      {
+        id: "seed_img_1",
+        type: "image",
+        url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800",
+        title: "Elegant Fashion Moment",
+        createdAt: Date.now() - 5000,
+      },
+      {
+        id: "seed_img_2",
+        type: "image",
+        url: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800",
+        title: "Style & Grace",
+        createdAt: Date.now() - 4000,
+      },
+      {
+        id: "seed_img_3",
+        type: "image",
+        url: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800",
+        title: "Fashion Forward",
+        createdAt: Date.now() - 3000,
+      },
+      {
+        id: "seed_img_4",
+        type: "image",
+        url: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800",
+        title: "Couture Dreams",
+        createdAt: Date.now() - 2500,
+      },
+      {
+        id: "seed_img_5",
+        type: "image",
+        url: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800",
+        title: "Modern Chic",
+        createdAt: Date.now() - 2000,
+      },
+      {
+        id: "seed_vid_1",
+        type: "video",
+        url: "https://www.w3schools.com/html/mov_bbb.mp4",
+        title: "Behind the Scenes",
+        createdAt: Date.now() - 1500,
+      },
+      {
+        id: "seed_vid_2",
+        type: "video",
+        url: "https://www.w3schools.com/html/movie.mp4",
+        title: "Style Reel",
+        createdAt: Date.now() - 1000,
+      },
+    ];
+
+    const mediaRef = ref(db, "privateGallery/media");
+    const updates: Record<string, PrivateMediaItem> = {};
+    for (const item of placeholders) {
+      updates[item.id] = item;
+    }
+    await set(mediaRef, updates);
+  }
+}
+
 // re-export child for convenience
 export { child };

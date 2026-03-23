@@ -9,16 +9,20 @@ import ContactPage from "@/pages/ContactPage";
 import HomePage from "@/pages/HomePage";
 import PortfolioDetailPage from "@/pages/PortfolioDetailPage";
 import PortfolioPage from "@/pages/PortfolioPage";
+import PrivatePage from "@/pages/PrivatePage";
 import ServicesPage from "@/pages/ServicesPage";
+import YoAdminPage from "@/pages/YoAdminPage";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 
 function AppShell() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith("/admin");
+  const isPrivate = location.pathname.startsWith("/yo-private");
+  const isYoAdmin = location.pathname.startsWith("/yo-admin");
 
   return (
     <div className="min-h-screen bg-white">
-      {!isAdmin && <Navigation />}
+      {!isAdmin && !isPrivate && !isYoAdmin && <Navigation />}
 
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -31,11 +35,13 @@ function AppShell() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/admin/*" element={<AdminPage />} />
+        <Route path="/yo-private" element={<PrivatePage />} />
+        <Route path="/yo-admin" element={<YoAdminPage />} />
         {/* Fallback */}
         <Route path="*" element={<HomePage />} />
       </Routes>
 
-      {!isAdmin && <Footer />}
+      {!isAdmin && !isPrivate && !isYoAdmin && <Footer />}
       <Toaster position="bottom-right" richColors />
     </div>
   );
